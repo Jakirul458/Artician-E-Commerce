@@ -82,5 +82,6 @@ export const categories = [
   'Sculpture',
   'Jewelry',
   'Home Decor',
-  'Custom Orders'
+  'Custom Orders',
+  'Mandela Art'
 ]; 

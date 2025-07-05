@@ -17,6 +17,7 @@ const AdminDashboard = () => {
     dimensions: '',
     material: ''
   });
+  const [successMessage, setSuccessMessage] = useState('');
 
   useEffect(() => {
     if (!isAuthenticated) {
@@ -38,6 +39,7 @@ const AdminDashboard = () => {
     const productData = {
       ...formData,
       price: parseFloat(formData.price),
+      image: convertGoogleDriveLink(formData.image),
       inStock: true
     };
 
@@ -58,6 +60,8 @@ const AdminDashboard = () => {
       material: ''
     });
     setShowAddForm(false);
+    setSuccessMessage(editingProduct ? 'Product updated successfully!' : 'Product added successfully!');
+    setTimeout(() => setSuccessMessage(''), 3000);
   };
 
   const handleEdit = (product) => {
@@ -85,6 +89,22 @@ const AdminDashboard = () => {
     navigate('/admin');
   };
 
+  // Helper function to convert Google Drive links
+  function convertGoogleDriveLink(url) {
+    if (!url) return '';
+    // Match /d/FILE_ID or id=FILE_ID
+    const fileIdMatch = url.match(/\/d\/([a-zA-Z0-9_-]+)/) || url.match(/id=([a-zA-Z0-9_-]+)/);
+    const fileId = fileIdMatch ? fileIdMatch[1] : null;
+    if (fileId) {
+      return `https://drive.google.com/uc?export=view&id=${fileId}`;
+    }
+    // If already a direct link, return as is
+    if (url.includes('drive.google.com/uc?export=view&id=')) {
+      return url;
+    }
+    return url;
+  }
+
   if (!isAuthenticated) {
     return null;
   }
@@ -97,6 +117,19 @@ const AdminDashboard = () => {
           Logout
         </button>
       </div>
+
+      {successMessage && (
+        <div style={{ 
+          backgroundColor: '#d4edda', 
+          color: '#155724', 
+          padding: '1rem', 
+          borderRadius: '6px', 
+          marginBottom: '1rem',
+          textAlign: 'center'
+        }}>
+          {successMessage}
+        </div>
+      )}
 
       <div className="add-product-form">
         <h3>{editingProduct ? 'Edit Product' : 'Add New Product'}</h3>
@@ -168,10 +201,10 @@ const AdminDashboard = () => {
                   <option value="Digital Art">Digital Art</option>
                   <option value="Mixed Media">Mixed Media</option>
                   <option value="Sculpture">Sculpture</option>
-                  <option value="Jewelry">Jewelry</option>
                   <option value="Home Decor">Home Decor</option>
                   <option value="Cup Painting">Cup Painting</option>
                   <option value="T-Shirt Painting">T-Shirt Painting</option>
+                  <option value="Mandela Art">Mandela Art</option>
                   <option value="Custom Orders">Custom Orders</option>
                   
                 </select>
@@ -268,14 +301,16 @@ const AdminDashboard = () => {
         <div className="products-grid">
           {products.map(product => (
             <div key={product.id} className="product-card">
-              <img 
-                src={product.image} 
-                alt={product.title} 
-                className="product-image"
-                onError={(e) => {
-                  e.target.src = 'https://via.placeholder.com/300x250?text=Art+Work';
-                }}
-              />
+              <div className="product-image-container">
+                <img 
+                  src={convertGoogleDriveLink(product.image)} 
+                  alt={product.title} 
+                  className="product-image"
+                  onError={(e) => {
+                    e.target.src = 'https://via.placeholder.com/300x250?text=Art+Work';
+                  }}
+                />
+              </div>
               <div className="product-info">
                 <h3 className="product-title">{product.title}</h3>
                 <div className="product-price">₹{product.price.toFixed(2)}</div>

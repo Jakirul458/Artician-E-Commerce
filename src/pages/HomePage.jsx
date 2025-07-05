@@ -1,17 +1,18 @@
 import { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { useAdmin } from '../context/AdminContext';
 import { useCart } from '../context/CartContext';
-import { sampleProducts, categories } from '../data/sampleProducts';
+import { categories } from '../data/sampleProducts';
 import ProductCard from '../components/ProductCard';
 
 const HomePage = () => {
   const { products } = useAdmin();
+  const navigate = useNavigate();
   const [filteredProducts, setFilteredProducts] = useState([]);
   const [selectedCategory, setSelectedCategory] = useState('All');
 
-  // Use sample products if no products in admin context
-  const displayProducts = products.length > 0 ? products : sampleProducts;
-  // const displayProducts = products;
+  // Only use admin-added products, no sample products
+  const displayProducts = products;
 
   useEffect(() => {
     if (selectedCategory === 'All') {
@@ -36,7 +37,7 @@ const HomePage = () => {
         {categories.map(category => (
           <button
             key={category}
-            className={`category-btn ₹{selectedCategory === category ? 'active' : ''}`}
+            className={`category-btn ${selectedCategory === category ? 'active' : ''}`}
             onClick={() => setSelectedCategory(category)}
           >
             {category}
@@ -52,8 +53,25 @@ const HomePage = () => {
       </div>
 
       {filteredProducts.length === 0 && (
-        <div style={{ textAlign: 'center', padding: '2rem' }}>
-          <p>No products found in this category.</p>
+        <div style={{ textAlign: 'center', padding: '4rem 2rem' }}>
+          <h3 style={{ color: '#6c757d', marginBottom: '1rem' }}>
+            {products.length === 0 ? 'No products available yet' : 'No products found in this category'}
+          </h3>
+          <p style={{ color: '#6c757d', marginBottom: '2rem' }}>
+            {products.length === 0 
+              ? 'Please add some products through the admin panel to get started.' 
+              : 'Try selecting a different category or check back later.'
+            }
+          </p>
+          {products.length === 0 && (
+            <button 
+              className="add-to-cart-btn"
+              onClick={() => navigate('/admin')}
+              style={{ maxWidth: '200px' }}
+            >
+              Go to Admin Panel
+            </button>
+          )}
         </div>
       )}
     </div>

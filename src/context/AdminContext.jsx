@@ -60,13 +60,21 @@ export const AdminProvider = ({ children }) => {
   useEffect(() => {
     const savedProducts = localStorage.getItem('products');
     if (savedProducts) {
-      dispatch({ type: 'SET_PRODUCTS', payload: JSON.parse(savedProducts) });
+      try {
+        const parsedProducts = JSON.parse(savedProducts);
+        dispatch({ type: 'SET_PRODUCTS', payload: parsedProducts });
+      } catch (error) {
+        console.error('Error loading products from localStorage:', error);
+        localStorage.removeItem('products');
+      }
     }
   }, []);
 
   // Save products to localStorage whenever products change
   useEffect(() => {
-    localStorage.setItem('products', JSON.stringify(state.products));
+    if (state.products.length > 0) {
+      localStorage.setItem('products', JSON.stringify(state.products));
+    }
   }, [state.products]);
 
   const login = (adminData) => {
