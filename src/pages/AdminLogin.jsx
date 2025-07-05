@@ -76,13 +76,7 @@ const AdminLogin = () => {
         <button type="submit" className="login-btn">
           Login
         </button>
-      </form>
-
-      <div style={{ marginTop: '1rem', textAlign: 'center', fontSize: '0.9rem', color: '#7f8c8d' }}>
-        <p>Demo Credentials:</p>
-        <p>Username: admin</p>
-        <p>Password: admin123</p>
-      </div>
+      </form>     
     </div>
   );
 };
