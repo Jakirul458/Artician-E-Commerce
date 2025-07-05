@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, Link } from 'react-router-dom';
 import { useAdmin } from '../context/AdminContext';
 import { Trash2, Edit } from 'lucide-react';
 
@@ -92,15 +92,11 @@ const AdminDashboard = () => {
   // Helper function to convert Google Drive links
   function convertGoogleDriveLink(url) {
     if (!url) return '';
-    // Match /d/FILE_ID or id=FILE_ID
+    if (url.includes('drive.google.com/uc?export=view&id=')) return url;
     const fileIdMatch = url.match(/\/d\/([a-zA-Z0-9_-]+)/) || url.match(/id=([a-zA-Z0-9_-]+)/);
     const fileId = fileIdMatch ? fileIdMatch[1] : null;
     if (fileId) {
       return `https://drive.google.com/uc?export=view&id=${fileId}`;
-    }
-    // If already a direct link, return as is
-    if (url.includes('drive.google.com/uc?export=view&id=')) {
-      return url;
     }
     return url;
   }
@@ -300,44 +296,52 @@ const AdminDashboard = () => {
         <h3>Current Products ({products.length})</h3>
         <div className="products-grid">
           {products.map(product => (
-            <div key={product.id} className="product-card">
-              <div className="product-image-container">
-                <img 
-                  src={convertGoogleDriveLink(product.image)} 
-                  alt={product.title} 
-                  className="product-image"
-                  onError={(e) => {
-                    e.target.src = 'https://via.placeholder.com/300x250?text=Art+Work';
-                  }}
-                />
-              </div>
-              <div className="product-info">
-                <h3 className="product-title">{product.title}</h3>
-                <div className="product-price">₹{product.price.toFixed(2)}</div>
-                <p className="product-description">
-                  {product.description.length > 100 
-                    ? `${product.description.substring(0, 100)}...` 
-                    : product.description
-                  }
-                </p>
-                <div style={{ display: 'flex', gap: '0.5rem' }}>
-                  <button 
-                    className="quantity-btn"
-                    onClick={() => handleEdit(product)}
-                    style={{ backgroundColor: '#3498db', color: 'white', border: 'none' }}
-                  >
-                    <Edit size={16} />
-                  </button>
-                  <button 
-                    className="quantity-btn"
-                    onClick={() => handleDelete(product.id)}
-                    style={{ backgroundColor: '#e74c3c', color: 'white', border: 'none' }}
-                  >
-                    <Trash2 size={16} />
-                  </button>
+            <Link to={`/product/${product.id}`} key={product.id} style={{ textDecoration: 'none', color: 'inherit' }}>
+              <div className="product-card">
+                <div className="product-image-container">
+                  <img 
+                    src={convertGoogleDriveLink(product.image)} 
+                    alt={product.title} 
+                    className="product-image"
+                    onError={(e) => {
+                      e.target.src = 'https://via.placeholder.com/300x250?text=Art+Work';
+                    }}
+                  />
+                </div>
+                <div className="product-info">
+                  <h3 className="product-title">{product.title}</h3>
+                  <div className="product-price">₹{product.price.toFixed(2)}</div>
+                  <p className="product-description">
+                    {product.description.length > 100 
+                      ? `${product.description.substring(0, 100)}...` 
+                      : product.description
+                    }
+                  </p>
+                  <div style={{ display: 'flex', gap: '0.5rem' }}>
+                    <button 
+                      className="quantity-btn"
+                      onClick={(e) => {
+                        e.preventDefault();
+                        handleEdit(product);
+                      }}
+                      style={{ backgroundColor: '#3498db', color: 'white', border: 'none' }}
+                    >
+                      <Edit size={16} />
+                    </button>
+                    <button 
+                      className="quantity-btn"
+                      onClick={(e) => {
+                        e.preventDefault();
+                        handleDelete(product.id);
+                      }}
+                      style={{ backgroundColor: '#e74c3c', color: 'white', border: 'none' }}
+                    >
+                      <Trash2 size={16} />
+                    </button>
+                  </div>
                 </div>
               </div>
-            </div>
+            </Link>
           ))}
         </div>
 

@@ -8,6 +8,7 @@ import AdminLogin from './pages/AdminLogin';
 import AdminDashboard from './pages/AdminDashboard';
 import Cart from './pages/Cart';
 import Booking from './pages/Booking';
+import ProductDetails from './pages/ProductDetails';
 import './styles/App.css';
 
 function App() {
@@ -24,6 +25,7 @@ function App() {
                 <Route path="/admin/dashboard" element={<AdminDashboard />} />
                 <Route path="/cart" element={<Cart />} />
                 <Route path="/booking" element={<Booking />} />
+                <Route path="/product/:id" element={<ProductDetails />} />
               </Routes>
             </main>
             <Footer />
